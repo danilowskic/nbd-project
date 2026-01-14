@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo-planner
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=taskplanner
+    volumes:
+      - ./init_db.js:/docker-entrypoint-initdb.d/init_db.js:ro
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    container_name: spring-planner-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/taskplanner
+      - LOGGING_FILE_NAME=/app/logs/planner.log
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mongo-data:
