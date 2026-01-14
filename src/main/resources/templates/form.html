@@ -1,51 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edycja Zadania</title>
+    <title th:text="${task.id == null} ? 'Nowe Zadanie' : 'Edycja Zadania'"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light container mt-5">
+<body class="bg-light">
 
-<div class="card p-4">
-    <h2 th:text="${task.id == null} ? 'Nowe Zadanie' : 'Edycja Zadania'"></h2>
-
-    <form action="/save" method="post" th:object="${task}">
-        <input type="hidden" th:field="*{id}" />
-
-        <div class="mb-3">
-            <label>Tytuł</label>
-            <input type="text" th:field="*{title}" class="form-control" required />
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0" th:text="${task.id == null} ? 'Dodaj Nowe Zadanie' : 'Edycja Zadania'"></h4>
         </div>
+        <div class="card-body p-4">
 
-        <div class="row mb-3">
-            <div class="col">
-                <label>Kategoria</label>
-                <input type="text" th:field="*{category}" class="form-control" />
-            </div>
-            <div class="col">
-                <label>Priorytet (1-5)</label>
-                <input type="number" th:field="*{priority}" class="form-control" min="1" max="5" />
-            </div>
+            <form action="/save" method="post" th:object="${task}">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="mb-3">
+                    <label class="form-label">Tytuł Zadania *</label>
+                    <input type="text" th:field="*{title}" class="form-control" placeholder="Co jest do zrobienia?" required />
+                    <div class="text-danger small" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Kategoria *</label>
+                        <input type="text" th:field="*{category}" class="form-control" placeholder="np. PRACA" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Priorytet (1-5)</label>
+                        <input type="number" th:field="*{priority}" class="form-control" min="1" max="5" value="3" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Opis</label>
+                    <textarea th:field="*{description}" class="form-control" rows="2"></textarea>
+                </div>
+
+                <hr class="my-4"/>
+
+                <h6 class="text-muted mb-3">Atrybuty Dodatkowe (Specyficzne dla typu)</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Projekt</label>
+                        <input type="text" name="formProject" class="form-control"
+                               placeholder="Nazwa projektu"
+                               th:value="${task.flexibleAttributes.get('project')}" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data Deadline</label>
+                        <input type="date" name="formDeadline" class="form-control"
+                               th:value="${task.flexibleAttributes.get('deadline')}" />
+                    </div>
+                </div>
+                <div class="form-text mb-4">
+                    Te pola zostaną zapisane wewnątrz <code>flexibleAttributes</code> w dokumencie MongoDB.
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-grow-1">Zapisz Zadanie</button>
+                    <a href="/" class="btn btn-outline-secondary">Anuluj</a>
+                </div>
+            </form>
+
         </div>
-
-        <hr/>
-        <h5>Pola Dynamiczne (Specyficzne dla typu)</h5>
-        <div class="row mb-3">
-            <div class="col">
-                <label>Projekt</label>
-                <input type="text" name="formProject" class="form-control"
-                       th:value="${task.flexibleAttributes.get('project')}" />
-            </div>
-            <div class="col">
-                <label>Deadline</label>
-                <input type="date" name="formDeadline" class="form-control"
-                       th:value="${task.flexibleAttributes.get('deadline')}" />
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-success">Zapisz</button>
-        <a href="/" class="btn btn-secondary">Anuluj</a>
-    </form>
+    </div>
 </div>
 
 </body>

@@ -1,75 +1,118 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>ToDo List</title>
+    <title>Twoje Zadania</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
-<body class="bg-light container mt-4">
+<body class="bg-light">
 
-<h1>Menedżer Zadań</h1>
-
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Średni Priorytet: <span th:text="${#numbers.formatDecimal(avgPriority, 1, 2)}"></span></h5>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">MongoPlanner</a>
+        <div class="d-flex text-white align-items-center">
+            <span class="me-3">Zalogowany jako: <strong th:text="${username}">User</strong></span>
+            <form action="/logout" method="post">
+                <button type="submit" class="btn btn-outline-light btn-sm">Wyloguj</button>
+            </form>
         </div>
     </div>
-    <div class="col-md-8">
-        <div class="card p-3">
-            <h5>Zadania w Projektach:</h5>
-            <span th:each="stat : ${statsProject}" class="badge bg-primary me-2"
-                  th:text="${stat['projectName']} + ': ' + ${stat['count']}">
-                </span>
+</nav>
+
+<div class="container">
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Średni Priorytet Twoich Zadań</h6>
+                    <h2 class="display-6 fw-bold text-primary"
+                        th:text="${#numbers.formatDecimal(avgPriority, 1, 2)}">0.0</h2>
+                </div>
+            </div>
         </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">Zadania w Projektach (Agregacja)</h6>
+                    <div th:if="${statsProject.isEmpty()}" class="text-muted fst-italic">Brak zdefiniowanych projektów.</div>
+
+                    <span th:each="stat : ${statsProject}" class="badge bg-secondary fs-6 me-2 mb-2 p-2">
+                        <i class="bi bi-folder2-open"></i>
+                        <span th:text="${stat['projectName']}">Projekt</span>
+                        <span class="badge bg-light text-dark ms-1" th:text="${stat['count']}">0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-3 mb-4 shadow-sm">
+        <form action="/" method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Kategoria</label>
+                <input type="text" name="category" th:value="${param.category}" class="form-control" placeholder="np. Praca">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Priorytet</label>
+                <input type="number" name="priority" th:value="${param.priority}" class="form-control" placeholder="1-5">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Projekt (Dynamiczne)</label>
+                <input type="text" name="project" th:value="${param.project}" class="form-control" placeholder="Nazwa projektu">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-secondary flex-grow-1"><i class="bi bi-search"></i> Szukaj</button>
+                <a href="/" class="btn btn-outline-secondary">Wyczyść</a>
+                <a href="/add" class="btn btn-success flex-grow-1"><i class="bi bi-plus-lg"></i> Dodaj</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive bg-white shadow-sm rounded">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th style="width: 5%;">Priorytet</th>
+                <th style="width: 30%;">Tytuł</th>
+                <th style="width: 15%;">Kategoria</th>
+                <th style="width: 15%;">Projekt (Dyn)</th>
+                <th style="width: 15%;">Deadline (Dyn)</th>
+                <th style="width: 20%;" class="text-end">Akcje</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${tasks.isEmpty()}">
+                <td colspan="6" class="text-center py-4 text-muted">Brak zadań spełniających kryteria.</td>
+            </tr>
+
+            <tr th:each="task : ${tasks}">
+                <td>
+                        <span class="badge rounded-pill"
+                              th:classappend="${task.priority >= 4} ? 'bg-danger' : (${task.priority >= 3} ? 'bg-warning text-dark' : 'bg-success')"
+                              th:text="${task.priority}">
+                        </span>
+                </td>
+                <td class="fw-bold" th:text="${task.title}">Tytuł</td>
+                <td><span class="badge bg-light text-dark border" th:text="${task.category}">Kat</span></td>
+
+                <td th:text="${task.flexibleAttributes.get('project') ?: '-'}"></td>
+                <td th:text="${task.flexibleAttributes.get('deadline') ?: '-'}"></td>
+
+                <td class="text-end">
+                    <a th:href="@{/edit/{id}(id=${task.id})}" class="btn btn-sm btn-outline-primary me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a th:href="@{/delete/{id}(id=${task.id})}" class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('Czy na pewno chcesz usunąć to zadanie?');">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<div class="card p-3 mb-4">
-    <form action="/" method="get" class="row g-3">
-        <div class="col-md-3">
-            <input type="text" name="category" class="form-control" placeholder="Filtruj: Kategoria">
-        </div>
-        <div class="col-md-3">
-            <input type="number" name="priority" class="form-control" placeholder="Filtruj: Priorytet">
-        </div>
-        <div class="col-md-3">
-            <input type="text" name="project" class="form-control" placeholder="Filtruj: Projekt">
-        </div>
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-secondary w-100">Szukaj</button>
-            <a href="/" class="btn btn-link w-100">Wyczyść</a>
-        </div>
-    </form>
-</div>
-
-<a href="/add" class="btn btn-success mb-3">Dodaj Nowe Zadanie</a>
-
-<table class="table table-white">
-    <thead>
-    <tr>
-        <th>Priorytet</th>
-        <th>Tytuł</th>
-        <th>Kategoria</th>
-        <th>Projekt (Dyn)</th>
-        <th>Deadline (Dyn)</th>
-        <th>Akcje</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="task : ${tasks}">
-        <td th:text="${task.priority}"></td>
-        <td th:text="${task.title}"></td>
-        <td><span class="badge bg-secondary" th:text="${task.category}"></span></td>
-
-        <td th:text="${task.flexibleAttributes.get('project') ?: '-'}"></td>
-        <td th:text="${task.flexibleAttributes.get('deadline') ?: '-'}"></td>
-
-        <td>
-            <a th:href="@{/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edytuj</a>
-            <a th:href="@{/delete/{id}(id=${task.id})}" class="btn btn-danger btn-sm">Usuń</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
 </body>
 </html>
