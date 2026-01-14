@@ -1,6 +1,7 @@
 package com.danilowskic.nbd_project.service;
 
 import com.danilowskic.nbd_project.model.Task;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+@Slf4j
 @Service
 public class TaskStatisticsService {
 
@@ -24,6 +26,8 @@ public class TaskStatisticsService {
     }
 
     public List<Map> getStatsByProject(String owner) {
+        log.info("Getting stats for owner {}", owner);
+
         List<AggregationOperation> operations = new ArrayList<>();
 
         if (owner != null && !owner.isEmpty()) {
@@ -41,6 +45,8 @@ public class TaskStatisticsService {
     }
 
     public double getAveragePriority(String owner) {
+        log.info("Getting average priority for owner {}", owner);
+
         List<AggregationOperation> operations = new ArrayList<>();
 
         if (owner != null && !owner.isEmpty()) {

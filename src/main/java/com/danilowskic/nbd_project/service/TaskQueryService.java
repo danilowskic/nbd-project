@@ -3,6 +3,7 @@ package com.danilowskic.nbd_project.service;
 import com.danilowskic.nbd_project.exception.TaskNotFoundException;
 import com.danilowskic.nbd_project.model.Task;
 import com.danilowskic.nbd_project.repository.TaskRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class TaskQueryService {
 
@@ -42,6 +44,10 @@ public class TaskQueryService {
                 )
         );
 
-        return mongoTemplate.find(query, Task.class);
+        List<Task> tasks = mongoTemplate.find(query, Task.class);
+
+        log.info("Found {} tasks", tasks.size());
+
+        return tasks;
     }
 }

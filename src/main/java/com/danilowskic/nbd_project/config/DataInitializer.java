@@ -2,6 +2,7 @@ package com.danilowskic.nbd_project.config;
 
 import com.danilowskic.nbd_project.model.Task;
 import com.danilowskic.nbd_project.repository.TaskRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +11,14 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 public class DataInitializer {
 
     @Bean
     CommandLineRunner initData(TaskRepository taskRepository) {
         return args -> {
+            log.debug("Deleting entries from the database...");
             taskRepository.deleteAll();
 
             Task t1 = new Task();
@@ -41,11 +44,13 @@ public class DataInitializer {
             t4.setPriority(3);
             t4.setAttributes(Map.of("project", "Migracja Chmury", "deadline", LocalDateTime.now().plusDays(2).toString()));
 
+            log.debug("Seeding the database...");
+
             taskRepository.saveAll(
                     Arrays.asList(t1, t2, t3, t4)
             );
 
-            System.out.println("--- DATABASE SEEDED ---");
+            log.debug("Database seeded");
         };
     }
 }

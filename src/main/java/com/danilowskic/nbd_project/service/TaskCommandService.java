@@ -4,9 +4,11 @@ import com.danilowskic.nbd_project.exception.ForbiddenActionException;
 import com.danilowskic.nbd_project.exception.TaskNotFoundException;
 import com.danilowskic.nbd_project.model.Task;
 import com.danilowskic.nbd_project.repository.TaskRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 public class TaskCommandService {
@@ -30,6 +32,8 @@ public class TaskCommandService {
         }
 
         repository.save(task);
+
+        log.info("Created task with ID {}", task.getId());
     }
 
     public void delete(String id, String ownerUsername) {
@@ -41,5 +45,7 @@ public class TaskCommandService {
         }
 
         repository.deleteById(id);
+
+        log.info("Deleted task with ID {}", id);
     }
 }
