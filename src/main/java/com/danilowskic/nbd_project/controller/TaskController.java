@@ -7,20 +7,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.Collections;
+
 @Controller
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
-        model.addAttribute("newTask", new Task());
+    private static String username;
 
-        model.addAttribute("statsCategory", taskService.getTaskCountByCategory());
-        model.addAttribute("statsProject", taskService.getStatsByProject());
-        model.addAttribute("avgPriority", taskService.getAveragePriority());
+    @GetMapping("/")
+    public String home(Model model, Principal principal) {
+        username = principal.getName();
+
+        model.addAttribute("tasks", taskService.searchTasks(username, Collections.emptyList()));
+
+        model.addAttribute("statsProject", taskService.getProjectStats(username));
+        model.addAttribute("avgPriority", taskService.getAveragePriority(username));
 
         return "index";
     }
@@ -33,7 +38,7 @@ public class TaskController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable String id, Model model) {
-        Task task = taskService.getById(id);
+        Task task = taskService.getTaskById(id);
         model.addAttribute("task", task);
         return "form";
     }
@@ -51,13 +56,13 @@ public class TaskController {
             task.getAttributes().put("deadline", formDeadline);
         }
 
-        taskService.save(task);
+        taskService.saveTask(task, username);
         return "redirect:/";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteTask(@PathVariable String id) {
-        taskService.delete(id);
+        taskService.deleteTask(id, username);
         return "redirect:/";
     }
 }
