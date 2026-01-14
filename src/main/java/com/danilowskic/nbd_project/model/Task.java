@@ -19,6 +19,9 @@ public class Task {
     @Id
     private String id;
 
+    @Indexed
+    private String user;
+
     @NotBlank(message = "Title is required")
     private String title;
 
