@@ -1,5 +1,7 @@
 # MongoDB Task Planner - NBD
 
+#### _Author: Daniłowski Cezary (s25901)_
+
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.1-green)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-forestgreen)
