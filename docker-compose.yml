@@ -20,7 +20,7 @@ services:
     depends_on:
       - mongo
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/taskplanner
+      - SPRING_MONGODB_URI=mongodb://mongo:27017/taskplanner
       - LOGGING_FILE_NAME=/app/logs/planner.log
     volumes:
       - ./logs:/app/logs
