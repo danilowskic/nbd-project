@@ -27,6 +27,8 @@ public class Task {
 
     private String description;
 
+    private boolean completed;
+
     @Indexed
     @NotBlank(message = "Category must not be empty")
     private String category;

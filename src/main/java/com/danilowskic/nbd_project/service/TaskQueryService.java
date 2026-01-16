@@ -1,5 +1,6 @@
 package com.danilowskic.nbd_project.service;
 
+import com.danilowskic.nbd_project.exception.ForbiddenActionException;
 import com.danilowskic.nbd_project.exception.TaskNotFoundException;
 import com.danilowskic.nbd_project.model.Task;
 import com.danilowskic.nbd_project.repository.TaskRepository;
@@ -30,7 +31,7 @@ public class TaskQueryService {
                 .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
-    public List<Task> search(String owner, List<Pair<String, String>> filters) {
+    public List<Task> search(String owner, boolean isArchive, List<Pair<String, String>> filters) {
         Query query = new Query();
 
         if (owner != null && !owner.isEmpty()) {
@@ -44,10 +45,22 @@ public class TaskQueryService {
                 )
         );
 
+        query.addCriteria(Criteria.where("completed").is(isArchive));
+
         List<Task> tasks = mongoTemplate.find(query, Task.class);
 
         log.info("Found {} tasks", tasks.size());
 
         return tasks;
+    }
+
+    public void toggleTaskCompletion(String id, String owner) {
+        Task task = getById(id);
+
+        if (!task.getUser().equals(owner)) {
+            throw new ForbiddenActionException("You can not complite this task");
+        }
+        task.setCompleted(!task.isCompleted());
+        repository.save(task);
     }
 }

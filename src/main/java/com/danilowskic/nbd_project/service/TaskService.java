@@ -35,7 +35,7 @@ public interface TaskService {
      * @param filters List of pairs: argument name and filter value
      * @return {@link List<Task>}
      */
-    List<Task> searchTasks(String ownerUsername, List<Pair<String, String>> filters);
+    List<Task> searchTasks(String ownerUsername, boolean archive, List<Pair<String, String>> filters);
 
     /**
      * Generates project-level statistics for the specified owner.
@@ -53,4 +53,11 @@ public interface TaskService {
      * @return average priority
      */
     double getAveragePriority(String ownerUsername);
+
+    /**
+     * Sets task to completed
+     * @param id
+     * @param owner
+     */
+    void toggleTaskCompletion(String id, String owner);
 }

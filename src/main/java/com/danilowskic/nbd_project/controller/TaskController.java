@@ -20,11 +20,12 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public String home(Model model, Principal principal) {
+    public String home(Model model, Principal principal, @RequestParam(required = false, defaultValue = "false") boolean archive) {
         String username = principal.getName();
 
-        model.addAttribute("tasks", taskService.searchTasks(username, Collections.emptyList()));
+        model.addAttribute("tasks", taskService.searchTasks(username, archive, Collections.emptyList()));
 
+        model.addAttribute("isArchive", archive);
         model.addAttribute("statsProject", taskService.getProjectStats(username));
         model.addAttribute("avgPriority", taskService.getAveragePriority(username));
         model.addAttribute("username", username);
@@ -70,6 +71,12 @@ public class TaskController {
         String username = principal.getName();
 
         taskService.deleteTask(id, username);
+        return "redirect:/";
+    }
+
+    @GetMapping("/toggle/{id}")
+    public String toggleTask(@PathVariable String id, Principal principal) {
+        taskService.toggleTaskCompletion(id, principal.getName());
         return "redirect:/";
     }
 }

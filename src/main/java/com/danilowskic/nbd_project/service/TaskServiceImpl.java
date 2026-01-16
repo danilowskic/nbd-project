@@ -38,8 +38,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> searchTasks(String owner, List<Pair<String, String>> filters) {
-        return queryService.search(owner, filters);
+    public List<Task> searchTasks(String owner, boolean archive, List<Pair<String, String>> filters) {
+        return queryService.search(owner, archive, filters);
     }
 
     @Override
@@ -50,5 +50,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public double getAveragePriority(String owner) {
         return statsService.getAveragePriority(owner);
+    }
+
+    @Override
+    public void toggleTaskCompletion(String id, String owner) {
+        queryService.toggleTaskCompletion(id, owner);
     }
 }
