@@ -21,7 +21,7 @@
             Wylogowano pomyślnie.
         </div>
 
-        <form action="/login" method="post">
+        <form th:action="@{/login}" method="post">
             <div class="mb-3">
                 <label class="form-label">Nazwa użytkownika</label>
                 <input type="text" name="username" class="form-control" required autofocus>

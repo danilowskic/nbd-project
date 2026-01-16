@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AuthController {
 
-    @Autowired
-    private AppUserRepository userRepository;
+    private final AppUserRepository appUserRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthController(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
+        this.appUserRepository = appUserRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/login")
     public String login() {
@@ -36,7 +39,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         log.debug(String.format("Registering user %s", user.getUsername()));
-        userRepository.save(user);
+        appUserRepository.save(user);
 
         return "redirect:/login";
     }

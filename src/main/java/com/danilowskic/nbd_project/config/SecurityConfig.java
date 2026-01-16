@@ -12,9 +12,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    private final AppUserDetailsService appUserDetailsService;
+
+    public SecurityConfig(AppUserDetailsService appUserDetailsService) {
+        this.appUserDetailsService = appUserDetailsService;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .authenticationProvider(authenticationProvider(appUserDetailsService))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
