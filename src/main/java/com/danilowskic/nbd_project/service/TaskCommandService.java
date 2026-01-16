@@ -20,20 +20,29 @@ public class TaskCommandService {
     }
 
     public void save(Task task, String ownerUsername) {
+        if (task.getId().isEmpty()) {
+            log.info("Task is being created for user {}", ownerUsername);
+            task.setId(null);
+        }
+
         if (task.getId() == null) {
             task.setUser(ownerUsername);
         } else {
+            log.info("Task is being updated for user {}", ownerUsername);
+
             Task existingTask = repository.findById(task.getId())
                     .orElseThrow(() -> new TaskNotFoundException(task.getId()));
 
             if (!existingTask.getUser().equals(ownerUsername)) {
                 throw new ForbiddenActionException("This task cannot be edited");
             }
+
+            task.setUser(existingTask.getUser());
         }
 
-        repository.save(task);
+        Task savedTask = repository.save(task);
 
-        log.info("Created task with ID {}", task.getId());
+        log.info("Created task with ID {}", savedTask.getId());
     }
 
     public void delete(String id, String ownerUsername) {

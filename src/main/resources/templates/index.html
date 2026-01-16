@@ -12,7 +12,7 @@
         <a class="navbar-brand" href="/">MongoPlanner</a>
         <div class="d-flex text-white align-items-center">
             <span class="me-3">Zalogowany jako: <strong th:text="${username}">User</strong></span>
-            <form action="/logout" method="post">
+            <form th:action="@{/logout}" method="post">
                 <button type="submit" class="btn btn-outline-light btn-sm">Wyloguj</button>
             </form>
         </div>
@@ -96,8 +96,8 @@
                 <td class="fw-bold" th:text="${task.title}">Tytuł</td>
                 <td><span class="badge bg-light text-dark border" th:text="${task.category}">Kat</span></td>
 
-                <td th:text="${task.flexibleAttributes.get('project') ?: '-'}"></td>
-                <td th:text="${task.flexibleAttributes.get('deadline') ?: '-'}"></td>
+                <td th:text="${task.attributes.get('project') ?: '-'}"></td>
+                <td th:text="${task.attributes.get('deadline') ?: '-'}"></td>
 
                 <td class="text-end">
                     <a th:href="@{/edit/{id}(id=${task.id})}" class="btn btn-sm btn-outline-primary me-1">

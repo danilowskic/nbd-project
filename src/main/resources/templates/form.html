@@ -13,7 +13,7 @@
         </div>
         <div class="card-body p-4">
 
-            <form action="/save" method="post" th:object="${task}">
+            <form th:action="@{/save}" method="post" th:object="${task}">
                 <input type="hidden" th:field="*{id}" />
 
                 <div class="mb-3">
@@ -46,16 +46,16 @@
                         <label class="form-label">Projekt</label>
                         <input type="text" name="formProject" class="form-control"
                                placeholder="Nazwa projektu"
-                               th:value="${task.flexibleAttributes.get('project')}" />
+                               th:value="${task.attributes.get('project')}" />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Data Deadline</label>
                         <input type="date" name="formDeadline" class="form-control"
-                               th:value="${task.flexibleAttributes.get('deadline')}" />
+                               th:value="${task.attributes.get('deadline')}" />
                     </div>
                 </div>
                 <div class="form-text mb-4">
-                    Te pola zostaną zapisane wewnątrz <code>flexibleAttributes</code> w dokumencie MongoDB.
+                    Te pola zostaną zapisane wewnątrz <code>attributes</code> w dokumencie MongoDB.
                 </div>
 
                 <div class="d-flex gap-2">
