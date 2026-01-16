@@ -69,40 +69,60 @@
         </form>
     </div>
 
+    <ul class="nav nav-pills mb-3">
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${!isArchive} ? 'active'" href="/">
+                <i class="bi bi-list-task"></i> Do zrobienia
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${isArchive} ? 'active'" href="/?archive=true">
+                <i class="bi bi-archive"></i> Archiwum
+            </a>
+        </li>
+    </ul>
+
     <div class="table-responsive bg-white shadow-sm rounded">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
             <tr>
-                <th style="width: 5%;">Priorytet</th>
-                <th style="width: 30%;">Tytuł</th>
-                <th style="width: 15%;">Kategoria</th>
-                <th style="width: 15%;">Projekt (Dyn)</th>
-                <th style="width: 15%;">Deadline (Dyn)</th>
-                <th style="width: 20%;" class="text-end">Akcje</th>
+                <th>Status</th> <th>Priorytet</th>
+                <th>Tytuł</th>
+                <th class="text-end">Akcje</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${tasks.isEmpty()}">
-                <td colspan="6" class="text-center py-4 text-muted">Brak zadań spełniających kryteria.</td>
+                <td colspan="7" class="text-center py-4 text-muted">Brak zadań w tej sekcji.</td>
             </tr>
 
-            <tr th:each="task : ${tasks}">
+            <tr th:each="task : ${tasks}" th:classappend="${task.completed} ? 'table-secondary text-muted'">
                 <td>
-                        <span class="badge rounded-pill"
-                              th:classappend="${task.priority >= 4} ? 'bg-danger' : (${task.priority >= 3} ? 'bg-warning text-dark' : 'bg-success')"
-                              th:text="${task.priority}">
-                        </span>
+                    <a th:href="@{/toggle/{id}(id=${task.id})}"
+                       class="btn btn-sm rounded-circle"
+                       th:classappend="${task.completed} ? 'btn-success' : 'btn-outline-secondary'"
+                       title="Zmień status">
+                        <i class="bi" th:classappend="${task.completed} ? 'bi-check-lg' : 'bi-circle'"></i>
+                    </a>
                 </td>
-                <td class="fw-bold" th:text="${task.title}">Tytuł</td>
-                <td><span class="badge bg-light text-dark border" th:text="${task.category}">Kat</span></td>
 
-                <td th:text="${task.attributes.get('project') ?: '-'}"></td>
-                <td th:text="${task.attributes.get('deadline') ?: '-'}"></td>
+                <td>
+                     <span class="badge rounded-pill"
+                           th:classappend="${task.priority >= 4} ? 'bg-danger' : (${task.priority >= 3} ? 'bg-warning text-dark' : 'bg-success')"
+                           th:text="${task.priority}">
+                     </span>
+                </td>
+
+                <td class="fw-bold">
+                    <span th:if="${!task.completed}" th:text="${task.title}"></span>
+                    <del th:if="${task.completed}" th:text="${task.title}"></del>
+                </td>
 
                 <td class="text-end">
-                    <a th:href="@{/edit/{id}(id=${task.id})}" class="btn btn-sm btn-outline-primary me-1">
+                    <a th:if="${!task.completed}" th:href="@{/edit/{id}(id=${task.id})}" class="btn btn-sm btn-outline-primary me-1">
                         <i class="bi bi-pencil"></i>
                     </a>
+
                     <a th:href="@{/delete/{id}(id=${task.id})}" class="btn btn-sm btn-outline-danger"
                        onclick="return confirm('Czy na pewno chcesz usunąć to zadanie?');">
                         <i class="bi bi-trash"></i>
