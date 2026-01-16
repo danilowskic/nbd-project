@@ -13,24 +13,26 @@ import java.util.Collections;
 @Controller
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    private static String username;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @GetMapping("/")
     public String home(Model model, Principal principal) {
-        username = principal.getName();
+        String username = principal.getName();
 
         model.addAttribute("tasks", taskService.searchTasks(username, Collections.emptyList()));
 
         model.addAttribute("statsProject", taskService.getProjectStats(username));
         model.addAttribute("avgPriority", taskService.getAveragePriority(username));
+        model.addAttribute("username", username);
 
         return "index";
     }
 
-    @PostMapping("/add")
+    @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("task", new Task());
         return "form";
@@ -47,8 +49,11 @@ public class TaskController {
     public String saveTask(
             @ModelAttribute Task task,
             @RequestParam(required = false) String formProject,
-            @RequestParam(required = false) String formDeadline
+            @RequestParam(required = false) String formDeadline,
+            Principal principal
     ) {
+        String username = principal.getName();
+
         if (formProject != null && !formProject.isEmpty()) {
             task.getAttributes().put("project", formProject);
         }
@@ -61,7 +66,9 @@ public class TaskController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteTask(@PathVariable String id) {
+    public String deleteTask(@PathVariable String id, Principal principal) {
+        String username = principal.getName();
+
         taskService.deleteTask(id, username);
         return "redirect:/";
     }
