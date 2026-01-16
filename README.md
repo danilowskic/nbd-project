@@ -1,4 +1,4 @@
-# MongoDB Task Planner - Projekt Zaliczeniowy
+# MongoDB Task Planner - NBD
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.1-green)
